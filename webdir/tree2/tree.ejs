@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <style>
+            div.area {
+                width:300px;
+                height:300px;
+                margin:0;
+                padding:0;
+                border: 1px solid #000000;
+            }
+            div.leaf {
+                width: 100%;
+                margin:0 auto;
+                text-align: center;
+                line-height: 1.1;
+                letter-spacing: -3px;
+            }
+        </style>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var sckt = io.connect('http://192.168.33.10:3000/tree');
+
+            sckt.on("startMsg", function(data){
+                console.log(data.msg);
+                sckt.emit("getUpdateTree",{"writeHeight": 7});
+            });
+            sckt.on("setUpdateTree", function(data){
+                let area = document.getElementsByClassName('area');
+                area[0].innerHTML = data.drowTags;
+            });
+
+            function changeHeight(){
+                let height = 7,
+                writeHeight = document.getElementById('height').value;
+                if(writeHeight % 1 === 0){
+                    height = writeHeight;
+                }
+                sckt.emit("getUpdateTree",{"writeHeight": height});
+            }
+
+            function disconnect(){
+                sckt.disconnect();
+                document.getElementById("end").disabled = true;
+                document.getElementById("start").disabled = false;
+            }
+
+            function connect(){
+                sckt.connect();
+                document.getElementById("end").disabled = false;
+                document.getElementById("start").disabled = true;
+            }
+        </script>
+
+    </head>
+    <body>
+        <div class="area">
+        </div>
+        <input type="number" id="height" value="7">
+        <input type="button" onClick="changeHeight()" value="更新">
+        <input type="button" onClick="disconnect()" id="end" value="接続終了">
+        <input type="button" onClick="connect()" id="start" disabled value="接続再開">
+    </body>
+</html>

@@ -1,0 +1,7 @@
+# from galaxy
+
+# DB
+- src: geerlingguy.mysql
+
+# サーバ
+- src: geerlingguy.nodejs

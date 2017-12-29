@@ -1,0 +1,33 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: stop SELinux
+      selinux: policy=targeted state=disabled
+
+  roles:
+    - name: geerlingguy.mysql
+      # いい機会なのでmariaDBを使ってみる
+      mysql_databases:
+        - name: devDb
+          collation: utf8_general_ci
+          encoding: utf8
+          replicate: 1
+      mysql_users:
+        - name: hoge
+          host: localhost
+          password: fuga
+          priv: "devDb.*:ALL"
+      tags:
+        - mysql
+    - name: geerlingguy.nodejs
+      nodejs_version: "8.x"
+      nodejs_npm_global_packages: 
+        - name: typescript
+        - name: socket.io
+        - name: express
+        - name: "@types/node"
+      tags:
+        - nodejs
+  
